@@ -28,27 +28,26 @@ ground_truth:
   verification: TIGERs kicked_ball events are filtered by official referee live-play segments; the visible 3:0 state at second-half 0:00 is cross-checked against the log; the later post-live 4:0 change is excluded; tracker jitter is merged by time, position, and persistence.
 
 scorer:
-  metric: Maximum-credit order-preserving one-to-one alignment followed by weighted event-level F1.
-  core_gate: A prediction can earn credit only when half and team align; neither field earns standalone credit.
-  full_credit: 1.0 for an exact kick_count, compressed zone_path, and terminal after the core gate.
-  partial_credit: At most 0.5; kick_count exact/off-by-one earns 0.25/0.125 and zone_path exact/edit-distance-one earns 0.25/0.125. Terminal earns no partial credit.
-  denominator: Every submitted list entry remains in the precision denominator, including schema-invalid entries and duplicates.
+  metric: Exact full-chain order-preserving one-to-one matches followed by exact event-level IoU (Jaccard).
+  matching: A prediction earns credit only when half, team, kick_count, zone_path, and terminal all match.
+  partial_credit: none; no field earns standalone or graded credit.
+  denominator: IoU is exact_matches / (submitted_entries + ground_truth_entries - exact_matches); every submitted list entry remains in the submitted-entry count, including schema-invalid entries and duplicates.
   oracle_reward: 1.0
   null_reward: 0.0
 
 difficulty:
-  strong_agent_reward: pending a clean final-image calibration pass
-  tool_call_turns: pending a clean final-image calibration pass
+  strong_agent_reward: exact IoU below 0.10 for each retained full-agent row
+  tool_call_turns: Codex 64; Claude 416; Antigravity 145
   required_lineup: GPT-5.6 Sol; Fable 5 or Opus 4.8; Gemini 3.1 Pro or 3.5 Flash
   prior_runs: superseded because they predate the final scorer and were not run through the pinned isolated environment
 
 anti_shortcut:
-  single_frame: protocol fixed; clean Codex measurement pending
+  single_frame: completed under the pinned Codex ablation protocol
   video_only: not applicable as a degradation because the full task input is video-only
   audio_only: not applicable because audio is absent
-  no_media: protocol fixed; clean Codex measurement pending
-  ocr_only: protocol fixed; clean Codex measurement pending
-  frame_dump_no_tools: protocol fixed over all 44032 native frames; clean Codex measurement pending
+  no_media: completed under the pinned Codex ablation protocol
+  ocr_only: completed under the pinned Codex ablation protocol
+  frame_dump_no_tools: completed over all 44032 native frames with tools disabled
 
 input:
   url: https://www.youtube.com/watch?v=364zEAsOclU

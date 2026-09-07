@@ -10,6 +10,10 @@ payload redaction, and publish the raw or deterministically scrubbed whole file 
 fork release asset. Record its URL and SHA256 in `../scores.md`; do not replace the
 raw trajectory with a summary.
 
+For user-operated Claude and Antigravity runs, use the wrappers under
+`../manual-runs/`. Their generated `manual-run-summary.json` is metadata, not a
+replacement for the raw Harbor ATIF trajectory.
+
 Example deterministic scrub:
 
 ```bash

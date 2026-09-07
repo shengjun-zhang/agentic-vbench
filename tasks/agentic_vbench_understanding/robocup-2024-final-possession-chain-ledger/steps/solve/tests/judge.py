@@ -23,9 +23,6 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-FULL_CREDIT_UNITS = 8
-
-
 def canonical(entry: object) -> tuple[object, ...] | None:
     if not isinstance(entry, dict):
         return None
@@ -49,69 +46,14 @@ def canonical(entry: object) -> tuple[object, ...] | None:
     return half, team, kick_count, tuple(zone_path), terminal
 
 
-def edit_distance(left: tuple[object, ...], right: tuple[object, ...]) -> int:
-    previous = list(range(len(right) + 1))
-    for left_item in left:
-        current = [previous[0] + 1]
-        for index, right_item in enumerate(right, start=1):
-            current.append(
-                min(
-                    current[-1] + 1,
-                    previous[index] + 1,
-                    previous[index - 1] + (left_item != right_item),
-                )
-            )
-        previous = current
-    return previous[-1]
-
-
-def pair_credit_units(
-    prediction: tuple[object, ...], ground_truth: tuple[object, ...]
-) -> int:
-    """Return exact credit or gated detail credit in eighth-point units."""
-    if prediction[:2] != ground_truth[:2]:
-        return 0
-    if prediction == ground_truth:
-        return FULL_CREDIT_UNITS
-
-    kick_delta = abs(int(prediction[2]) - int(ground_truth[2]))
-    kick_units = 2 if kick_delta == 0 else 1 if kick_delta == 1 else 0
-    zone_delta = edit_distance(prediction[3], ground_truth[3])
-    zone_units = 2 if zone_delta == 0 else 1 if zone_delta == 1 else 0
-    return kick_units + zone_units
-
-
-def alignment_key(alignment: tuple[int, int, int]) -> tuple[int, int, int]:
-    credit_units, full_matches, partial_matches = alignment
-    return credit_units, full_matches, -partial_matches
-
-
-def weighted_ordered_alignment(
+def exact_ordered_matches(
     predicted: list[tuple[object, ...]], expected: list[tuple[object, ...]]
-) -> tuple[int, int, int]:
-    """Maximize gated credit under order-preserving one-to-one alignment."""
-    previous = [(0, 0, 0)] * (len(expected) + 1)
-    for prediction in predicted:
-        current = [(0, 0, 0)]
-        for index, ground_truth in enumerate(expected, start=1):
-            candidates = [previous[index], current[-1]]
-            units = pair_credit_units(prediction, ground_truth)
-            if units:
-                prior_units, prior_full, prior_partial = previous[index - 1]
-                candidates.append(
-                    (
-                        prior_units + units,
-                        prior_full + (units == FULL_CREDIT_UNITS),
-                        prior_partial + (units != FULL_CREDIT_UNITS),
-                    )
-                )
-            current.append(max(candidates, key=alignment_key))
-        previous = current
-    return previous[-1]
+) -> int:
+    """Order-preserving one-to-one count of exact five-field matches.
 
-
-def lcs_matches(predicted: list[tuple[object, ...]], expected: list[tuple[object, ...]]) -> int:
-    """Return exact order-preserving one-to-one matches for diagnostics."""
+    A prediction and a ground-truth chain match only when all five canonical
+    fields are identical. No partial or graded credit is awarded.
+    """
     previous = [0] * (len(expected) + 1)
     for prediction in predicted:
         current = [0]
@@ -124,14 +66,18 @@ def lcs_matches(predicted: list[tuple[object, ...]], expected: list[tuple[object
     return previous[-1]
 
 
-def f1(credit: float, predicted: int, expected: int) -> tuple[float, float, float]:
-    precision = credit / predicted if predicted else 0.0
-    recall = credit / expected if expected else 0.0
-    score = (
-        2 * precision * recall / (precision + recall)
-        if precision + recall
-        else 0.0
-    )
+def exact_iou(matches: int, predicted: int, expected: int) -> tuple[float, float, float]:
+    """Return precision, recall, and exact-match Jaccard/IoU.
+
+    Matches are the intersection of submitted and reference chains under the
+    order-preserving one-to-one alignment. The union counts every submitted
+    entry, including malformed entries and duplicates, so the metric penalizes
+    both false positives and missing reference chains.
+    """
+    precision = matches / predicted if predicted else 0.0
+    recall = matches / expected if expected else 0.0
+    union = predicted + expected - matches
+    score = matches / union if union else 0.0
     return precision, recall, score
 
 
@@ -157,40 +103,21 @@ def main() -> None:
         predictions_raw = []
 
     predictions = [item for entry in predictions_raw if (item := canonical(entry)) is not None]
-    credit_units, full_matches, partial_matches = weighted_ordered_alignment(
-        predictions, expected
+    exact_matches = exact_ordered_matches(predictions, expected)
+    precision, recall, reward = exact_iou(
+        exact_matches, len(predictions_raw), len(expected)
     )
-    credit = credit_units / FULL_CREDIT_UNITS
-    core_matches = lcs_matches(
-        [item[:2] for item in predictions], [item[:2] for item in expected]
-    )
-    precision, recall, reward = f1(credit, len(predictions_raw), len(expected))
 
     details = {
         "reason": reason,
         "n_ground_truth": len(expected),
         "n_predicted": len(predictions_raw),
         "n_schema_valid": len(predictions),
-        "full_chain_matches": full_matches,
-        "partial_chain_matches": partial_matches,
-        "credited_matches": round(credit, 4),
-        "half_team_core_matches": core_matches,
+        "exact_matches": exact_matches,
         "precision": round(precision, 4),
         "recall": round(recall, 4),
-        "f1": round(reward, 4),
-        "matching": "maximum-credit order-preserving one-to-one",
-        "credit_policy": {
-            "core_gate": ["half", "team"],
-            "full": "1.0 for exact kick_count, zone_path, and terminal",
-            "partial": {
-                "maximum": 0.5,
-                "kick_count_exact": 0.25,
-                "kick_count_off_by_one": 0.125,
-                "zone_path_exact": 0.25,
-                "zone_path_edit_distance_one": 0.125,
-                "team_or_terminal_standalone": 0.0,
-            },
-        },
+        "exact_iou": round(reward, 4),
+        "matching": "exact five-field order-preserving one-to-one; no partial credit",
     }
     args.reward_json.parent.mkdir(parents=True, exist_ok=True)
     args.reward_json.write_text(
@@ -199,7 +126,7 @@ def main() -> None:
                 "reward": round(reward, 4),
                 "precision": round(precision, 4),
                 "recall": round(recall, 4),
-                "f1": round(reward, 4),
+                "exact_iou": round(reward, 4),
             },
             indent=2,
         )
