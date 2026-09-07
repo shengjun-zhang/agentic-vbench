@@ -17,16 +17,17 @@ Pinned artifacts:
 
 | artifact | bytes | SHA256 |
 |---|---:|---|
-| `match.mp4` (YouTube itag 298) | 173,343,080 | `076bcc59fc48443d24a72a87162021470b9e645b41c858c3ffa5b5b25bae36cd` |
+| [`match.mp4`](https://github.com/shengjun-zhang/agentic-vbench/releases/download/robocup-possession-chain-iou-20260907/match.mp4) (pinned release asset; source representation: YouTube itag 298) | 173,343,080 | `076bcc59fc48443d24a72a87162021470b9e645b41c858c3ffa5b5b25bae36cd` |
 | official log | 244,923,080 | `9ceda35082d8b39049de258efbf35934687c525a92324bf9a23ed61b7a3318d0` |
 
 The video is H.264, 1280x720, 50 fps, 14:40.64, with no audio stream. It covers
 both halves through the visible 3:0 score at 0:00 while removing some stopped-clock
 dead time. The official log subsequently records a 4:0 result after the last visible
 live-play stoppage; that post-live score change is not attributed to a video chain.
-The Docker build downloads the exact public YouTube representation and verifies its
-digest. `MATERIALS_URL` can override the downloader after the same bytes are
-re-hosted at a stable direct URL.
+The Docker build defaults to the pinned release asset above and verifies its digest,
+dimensions, frame rate, and duration. `MATERIALS_URL` is an explicit build argument
+for evaluators that provide the same checksum-pinned bytes; YouTube is not on the
+default build path.
 
 ## Ground truth
 

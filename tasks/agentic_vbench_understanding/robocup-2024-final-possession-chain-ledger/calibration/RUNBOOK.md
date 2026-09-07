@@ -7,10 +7,10 @@ read_when: Replacing superseded local rollouts with the clean qualification pass
 # Clean calibration runbook
 
 Run from the repository root on a machine with Docker and `uv`. Harbor reads the
-checked-in instruction directly; do not paste, append, or rewrite the prompt. For
-the final user-operated Claude and Antigravity runs, prefer the audited wrappers in
-`manual-runs/`; they avoid the fragile YouTube build request while preserving the
-exact video bytes.
+checked-in instruction directly; do not paste, append, or rewrite the prompt. The
+default Docker build downloads the checksum-pinned release asset, rather than a
+machine-local path or a YouTube response. The final user-operated Claude and
+Antigravity wrappers in `manual-runs/` preserve these exact bytes.
 
 ```bash
 TASK=tasks/agentic_vbench_understanding/robocup-2024-final-possession-chain-ledger

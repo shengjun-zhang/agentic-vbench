@@ -85,6 +85,7 @@ Record these once the final image is built and do not change the task between ro
 | Claude image ID | `sha256:ed8de26cfd100adf229adad2e0b8d70984d4ba002ef218b6145f57885e5937dc` |
 | Antigravity image ID | `sha256:b0d91055dca04597508994f693c9cc00b16bfeb5bfa2130a349fde0e66a7eeee` |
 | base image digest | `python:3.12-slim@sha256:2c941e860699f878900b0edc2403613c234d4b32eda3cc9fa7036991a2a63c4a` |
+| default materials URL | `https://github.com/shengjun-zhang/agentic-vbench/releases/download/robocup-possession-chain-iou-20260907/match.mp4` |
 | media SHA256 | `076bcc59fc48443d24a72a87162021470b9e645b41c858c3ffa5b5b25bae36cd` |
 
 ## Counting rules
@@ -104,3 +105,14 @@ the final answer in that retained log.
 The old desktop/local-agent measurements are superseded diagnostics, not formal
 calibration: they predate the reviewer-requested scorer and did not use this pinned
 isolated environment. The metadata-less schema-invalid Gemini export is dropped.
+
+## Media acquisition validation
+
+The ordinary no-argument Docker build was rerun after the calibration assets were
+published. It fetched the public release asset at the default URL recorded above,
+then verified SHA256 `076bcc59fc48443d24a72a87162021470b9e645b41c858c3ffa5b5b25bae36cd`
+and ffprobe values `1280x720`, `50/1`, and `880.640000` before completing. The
+resulting image manifest was
+`sha256:368d5d11838495230680432ac03ccec00df418e5e0462c6803d2b148455d3d44`.
+This is infrastructure validation only; the retained trajectories above remain
+byte-identical and were not rerun.
