@@ -57,13 +57,12 @@ Run the deterministic scorer tests with:
 python3 tools/test_judge.py
 ```
 
-The scorer first aligns predictions to ground truth in chronological order. A pair
-can earn credit only after `half` and `team` agree. An exact remaining tuple earns
-`1.0`; otherwise exact/off-by-one `kick_count` earns `0.25`/`0.125`, and an
-exact/edit-distance-one `zone_path` earns `0.25`/`0.125`. Partial credit is capped
-at `0.5`; `terminal`, `team`, and `half` have no standalone partial value. The final
-reward is weighted event-level F1, and invalid or duplicate submitted entries remain
-in the prediction denominator.
+The scorer aligns complete predictions to ground truth in chronological order. A
+prediction earns credit only when `half`, `team`, `kick_count`, `zone_path`, and
+`terminal` all match an order-preserving ground-truth chain. There is no partial
+credit. The final reward is exact event-level IoU (Jaccard): exact matches divided
+by `submitted entries + ground-truth entries - exact matches`. Invalid or duplicate
+submitted entries remain in the submitted-entry denominator.
 
 Four deterministic panels under `calibration/contact-evidence/` show consecutive
 native 720p50 frames around three first-half contacts and one second-half launch.
@@ -76,7 +75,7 @@ not qualify the task. The required clean pass is:
 
 1. GPT-5.6 Sol end to end, plus no-media, single-frame, OCR-only, and every-native-frame/no-tools ablations.
 2. Fable 5 or Opus 4.8 end to end on the unchanged task.
-3. Gemini 3.1 Pro or 3.5 Flash end to end on the unchanged task.
+3. Gemini 3.1 Pro or 3.5 Flash through Antigravity CLI end to end on the unchanged task.
 
 See `calibration/scores.md` for the qualification table and
 `calibration/ablations/README.md` for exact degraded-input definitions. Raw final
@@ -84,4 +83,6 @@ trajectories are published as fork release assets; their whole-file SHA256 value
 harness versions, image ID, task commit, and tool-call record types are recorded in
 the score table. `tools/scrub_trajectory.py` makes any required path/payload
 redactions reproducible. `calibration/RUNBOOK.md` contains the exact Harbor commands
-for all three end-to-end agents.
+for all three end-to-end agents. `calibration/manual-runs/` contains clean local-video
+wrappers for user-operated Claude Code and Antigravity runs without exposing prior
+outputs or verifier data to the model workspace.

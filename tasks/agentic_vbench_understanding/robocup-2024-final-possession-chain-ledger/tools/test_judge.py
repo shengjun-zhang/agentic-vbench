@@ -56,34 +56,55 @@ def main() -> None:
     assert score_bytes(b"not json")["reward"] == 0.0
     assert score({"chains": "wrong type"})["reward"] == 0.0
 
+    # One exact chain of 17: IoU penalizes the missing 16 reference chains.
+    one_correct = score({"chains": [chains[0]]})
+    assert one_correct["details"]["exact_matches"] == 1
+    assert one_correct["details"]["n_predicted"] == 1
+    assert one_correct["details"]["precision"] == 1.0
+    assert one_correct["details"]["recall"] == round(1 / len(chains), 4)  # 0.0588
+    assert one_correct["details"]["exact_iou"] == 0.0588
+    assert one_correct["reward"] == 0.0588
+
+    # All terminals wrong: zero exact matches, so IoU collapses to 0.0.
+    all_terminal_wrong = [dict(chain) for chain in chains]
+    for chain in all_terminal_wrong:
+        chain["terminal"] = "goal" if chain["terminal"] != "goal" else "stoppage"
+    terminal_wrong_result = score({"chains": all_terminal_wrong})
+    assert terminal_wrong_result["details"]["exact_matches"] == 0
+    assert terminal_wrong_result["reward"] == 0.0
+
     missing_one = score({"chains": chains[:-1]})
-    expected_missing = round(2 * (len(chains) - 1) / (2 * len(chains) - 1), 4)
+    expected_missing = round((len(chains) - 1) / len(chains), 4)
     assert missing_one["reward"] == expected_missing
 
     duplicated = score({"chains": chains + [chains[0]]})
-    expected_duplicate = round(2 * len(chains) / (2 * len(chains) + 1), 4)
+    assert duplicated["details"]["exact_matches"] == len(chains)
+    assert duplicated["details"]["n_predicted"] == len(chains) + 1
+    expected_duplicate = round(len(chains) / (len(chains) + 1), 4)
     assert duplicated["reward"] == expected_duplicate
 
     malformed_entry = score({"chains": [*chains, {"half": 1}]})
     assert malformed_entry["details"]["n_schema_valid"] == len(chains)
+    assert malformed_entry["details"]["n_predicted"] == len(chains) + 1
     assert malformed_entry["reward"] < 1.0
 
     wrong_terminal = [dict(chain) for chain in chains]
     wrong_terminal[0]["terminal"] = "stoppage"
     terminal_result = score({"chains": wrong_terminal})
-    assert terminal_result["details"]["full_chain_matches"] == len(chains) - 1
-    assert terminal_result["details"]["partial_chain_matches"] == 1
-    assert terminal_result["details"]["credited_matches"] == len(chains) - 0.5
+    assert terminal_result["details"]["exact_matches"] == len(chains) - 1
+    assert terminal_result["reward"] == round((len(chains) - 1) / (len(chains) + 1), 4)
 
-    graded = [dict(chain) for chain in chains]
-    graded[0]["kick_count"] += 1
-    graded_result = score({"chains": graded})
-    assert graded_result["details"]["credited_matches"] == len(chains) - 0.625
+    wrong_kick = [dict(chain) for chain in chains]
+    wrong_kick[0]["kick_count"] += 1
+    wrong_kick_result = score({"chains": wrong_kick})
+    assert wrong_kick_result["details"]["exact_matches"] == len(chains) - 1
+    assert wrong_kick_result["reward"] == round((len(chains) - 1) / (len(chains) + 1), 4)
 
-    zone_graded = [dict(chain) for chain in chains]
-    zone_graded[0]["zone_path"] = ["defensive", "attacking"]
-    zone_result = score({"chains": zone_graded})
-    assert zone_result["details"]["credited_matches"] == len(chains) - 0.625
+    wrong_zone = [dict(chain) for chain in chains]
+    wrong_zone[0]["zone_path"] = ["defensive", "attacking"]
+    wrong_zone_result = score({"chains": wrong_zone})
+    assert wrong_zone_result["details"]["exact_matches"] == len(chains) - 1
+    assert wrong_zone_result["reward"] == round((len(chains) - 1) / (len(chains) + 1), 4)
 
     terminal_only = {
         "half": 1,
@@ -96,6 +117,9 @@ def main() -> None:
 
     wrong_core = dict(chains[0], team="black")
     assert score({"chains": [wrong_core]})["reward"] == 0.0
+
+    wrong_half = dict(chains[0], half=2)
+    assert score({"chains": [wrong_half]})["reward"] == 0.0
 
     boolean_half = dict(chains[0], half=True)
     boolean_result = score({"chains": [boolean_half]})
