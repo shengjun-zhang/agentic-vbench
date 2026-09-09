@@ -17,7 +17,7 @@ Pinned artifacts:
 
 | artifact | bytes | SHA256 |
 |---|---:|---|
-| [`match.mp4`](https://github.com/shengjun-zhang/agentic-vbench/releases/download/robocup-possession-chain-iou-20260909/match.mp4) (pinned release asset; source representation: YouTube itag 298) | 173,343,080 | `076bcc59fc48443d24a72a87162021470b9e645b41c858c3ffa5b5b25bae36cd` |
+| [`match.mp4`](https://github.com/shengjun-zhang/agentic-vbench/releases/download/robocup-possession-chain-iou-20260909-evidence/match.mp4) (pinned release asset; source representation: YouTube itag 298) | 173,343,080 | `076bcc59fc48443d24a72a87162021470b9e645b41c858c3ffa5b5b25bae36cd` |
 | official log | 244,923,080 | `9ceda35082d8b39049de258efbf35934687c525a92324bf9a23ed61b7a3318d0` |
 
 The video is H.264, 1280x720, 50 fps, 14:40.64, with no audio stream. It covers
