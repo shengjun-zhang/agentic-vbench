@@ -14,6 +14,11 @@ submitted `solution.json` recorded in each retained job. Submitted solutions and
 trajectories were not modified. Reproducible score/details bundles and manifests are
 under `jobs/robocup-review-fix-rescore-20260830/`.
 
+The reviewer-audited first-half boundary chain now accepts its one explicit alternate
+full path (`middle -> attacking` or `defensive -> attacking`). The tracked first kick
+is `-1.994 m`, `0.006 m` from the `-2.0 m` boundary; every retained row re-scores to
+the same value under this addition. It is not partial credit.
+
 ## End-to-end agents
 
 Official reward is the `exact IoU` column. `precision`/`recall`/`n_pred`/`schema_valid`/

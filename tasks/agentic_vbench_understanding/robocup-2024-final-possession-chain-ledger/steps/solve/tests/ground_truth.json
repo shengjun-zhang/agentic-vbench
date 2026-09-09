@@ -28,6 +28,9 @@
         "middle",
         "attacking"
       ],
+      "zone_path_alternatives": [
+        ["defensive", "attacking"]
+      ],
       "terminal": "stoppage"
     },
     {

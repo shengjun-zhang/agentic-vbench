@@ -65,6 +65,13 @@ credit. The final reward is exact event-level IoU (Jaccard): exact matches divid
 by `submitted entries + ground-truth entries - exact matches`. Invalid or duplicate
 submitted entries remain in the submitted-entry denominator.
 
+One reviewer-audited first-half kick has tracked attack progress `-1.994 m`, only
+`0.006 m` from the fixed `-2.0 m` zone boundary. Its ground-truth record therefore
+contains one explicit full-path alternative, `['defensive', 'attacking']`, alongside
+the primary `['middle', 'attacking']`. This is a location-specific equivalence for
+that frozen chain only: all five fields still require an exact, order-preserving
+match and no general partial credit is applied.
+
 Four deterministic panels under `calibration/contact-evidence/` show consecutive
 native 720p50 frames around three first-half contacts and one second-half launch.
 They establish that ball approach, contact/occlusion, reversal, and free-flight
@@ -72,11 +79,12 @@ separation resolve in the supplied pixels.
 
 The earlier local runs were removed as superseded diagnostics. They predate the
 final scorer and were not executed in the pinned isolated environment, so they do
-not qualify the task. The required clean pass is:
+not qualify the task. The retained qualification pass is recorded in
+`calibration/scores.md`:
 
-1. GPT-5.6 Sol end to end, plus no-media, single-frame, OCR-only, and every-native-frame/no-tools ablations.
-2. Fable 5 or Opus 4.8 end to end on the unchanged task.
-3. Gemini 3.1 Pro or 3.5 Flash through Antigravity CLI end to end on the unchanged task.
+1. GPT-5.6 Sol end to end, plus the four task-only ablations.
+2. Opus 4.8 end to end on the unchanged task.
+3. Gemini 3.5 Flash through Antigravity CLI end to end on the unchanged task.
 
 See `calibration/scores.md` for the qualification table and
 `calibration/ablations/README.md` for exact degraded-input definitions. Raw final

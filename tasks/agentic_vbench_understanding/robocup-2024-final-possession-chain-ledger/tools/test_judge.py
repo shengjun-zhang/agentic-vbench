@@ -55,6 +55,14 @@ def main() -> None:
     assert score({"chains": []})["reward"] == 0.0
     assert score_bytes(b"not json")["reward"] == 0.0
     assert score({"chains": "wrong type"})["reward"] == 0.0
+    for field, value in (("team", []), ("terminal", {}), ("zone_path", [[]])):
+        malformed = dict(chains[0], **{field: value})
+        result = score({"chains": [malformed]})
+        assert result["reward"] == 0.0
+        assert result["details"]["n_schema_valid"] == 0
+
+    assert score({"chains": [dict(chains[0], zone_path=["middle"])]})["reward"] == 0.0
+    assert score({"chains": [dict(chains[0], kick_count=2**100)]})["reward"] == 0.0
 
     # One exact chain of 17: IoU penalizes the missing 16 reference chains.
     one_correct = score({"chains": [chains[0]]})
@@ -64,6 +72,9 @@ def main() -> None:
     assert one_correct["details"]["recall"] == round(1 / len(chains), 4)  # 0.0588
     assert one_correct["details"]["exact_iou"] == 0.0588
     assert one_correct["reward"] == 0.0588
+
+    boundary_alternative = dict(chains[2], zone_path=["defensive", "attacking"])
+    assert score({"chains": [boundary_alternative]})["details"]["exact_matches"] == 1
 
     # All terminals wrong: zero exact matches, so IoU collapses to 0.0.
     all_terminal_wrong = [dict(chain) for chain in chains]

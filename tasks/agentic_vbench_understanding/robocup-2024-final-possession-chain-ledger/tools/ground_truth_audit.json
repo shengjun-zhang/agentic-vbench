@@ -140,6 +140,12 @@
         "middle",
         "attacking"
       ],
+      "zone_path_alternatives": [
+        [
+          "defensive",
+          "attacking"
+        ]
+      ],
       "terminal": "stoppage",
       "play_segment": 7,
       "log_start_s": 349.667,
@@ -169,6 +175,18 @@
           0.482
         ]
       ],
+      "attack_progress_m": [
+        -1.994,
+        2.06,
+        3.612
+      ],
+      "zone_boundary_alternatives": [
+        [
+          "defensive",
+          "attacking"
+        ]
+      ],
+      "zone_boundary_note": "Kick attack progress -1.994 m is 0.006 m from the +/-2.0 m boundary; the listed zone-path alternative is accepted.",
       "kick_speeds_mps": [
         5.669,
         4.844,

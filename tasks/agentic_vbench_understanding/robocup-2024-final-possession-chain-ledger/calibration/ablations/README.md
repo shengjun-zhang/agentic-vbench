@@ -12,6 +12,12 @@ are model runs, not hand-built submissions. Record the image ID, task commit, Ha
 version, harness version, model identifier, whole-file trajectory SHA256, output,
 and verifier details for every condition.
 
+For the three degraded-input conditions being rerun after review, the ablation
+harness appends this condition-only suffix after the checked-in task instruction:
+"Make a best-effort answer from the available input. You must write a valid
+non-empty solution.json even when the input is insufficient; do not abstain or omit
+the file." This suffix is not used for full-agent rows and does not alter scoring.
+
 | condition | exact degraded input | tools |
 |---|---|---|
 | no media | Remove both `/workspace/materials/match.mp4` and `/baked/match.mp4`; retain the unchanged instruction and schema. | Normal Codex tools. |

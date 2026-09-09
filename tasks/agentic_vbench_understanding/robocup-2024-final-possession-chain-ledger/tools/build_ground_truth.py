@@ -48,6 +48,7 @@ PHYSICAL_KICK_MERGE_WINDOW_S = 0.10
 PHYSICAL_KICK_MERGE_DISTANCE_M = 0.20
 MIN_KICK_SPEED_MPS = 0.5
 ZONE_BOUNDARY_M = 2.0
+ZONE_BOUNDARY_TOLERANCE_M = 0.01
 MIN_CHAIN_KICKS = 2
 
 
@@ -85,6 +86,7 @@ class Kick:
     y_m: float
     speed_mps: float
     zone: str
+    attack_progress_m: float
 
 
 def parse_args() -> argparse.Namespace:
@@ -274,7 +276,7 @@ def build_segment_end_times(states: list[RefState]) -> dict[int, float]:
     return end_times
 
 
-def classify_zone(x_m: float, raw_team: int, blue_positive: bool) -> str:
+def attack_progress(x_m: float, raw_team: int, blue_positive: bool) -> float:
     # blue_positive says the blue team's own goal is at +x. Teams attack away
     # from their own goal, so convert x into progress toward the opponent goal.
     if raw_team == 2:  # BLUE
@@ -283,7 +285,11 @@ def classify_zone(x_m: float, raw_team: int, blue_positive: bool) -> str:
         attack_sign = 1 if blue_positive else -1
     else:
         raise ValueError(f"unknown raw team: {raw_team}")
-    progress = attack_sign * x_m
+    return attack_sign * x_m
+
+
+def classify_zone(x_m: float, raw_team: int, blue_positive: bool) -> str:
+    progress = attack_progress(x_m, raw_team, blue_positive)
     if progress < -ZONE_BOUNDARY_M:
         return "defensive"
     if progress > ZONE_BOUNDARY_M:
@@ -335,6 +341,9 @@ def build_kicks(
                 y_m=y_m,
                 speed_mps=speed,
                 zone=classify_zone(x_m, representative.raw_team, state.blue_goal_positive_x),
+                attack_progress_m=attack_progress(
+                    x_m, representative.raw_team, state.blue_goal_positive_x
+                ),
             )
         )
     return kicks, rejected
@@ -346,6 +355,24 @@ def compress_zones(kicks: list[Kick]) -> list[str]:
         if not zones or zones[-1] != kick.zone:
             zones.append(kick.zone)
     return zones
+
+
+def boundary_zone_alternatives(kicks: list[Kick], primary: list[str]) -> list[list[str]]:
+    """Return exact alternate paths only for log positions within the reviewed tolerance."""
+    alternatives: list[list[str]] = []
+    for index, kick in enumerate(kicks):
+        if abs(abs(kick.attack_progress_m) - ZONE_BOUNDARY_M) > ZONE_BOUNDARY_TOLERANCE_M:
+            continue
+        alternate_zone = "attacking" if kick.attack_progress_m > 0 else "defensive"
+        alternate_zones = [item.zone for item in kicks]
+        alternate_zones[index] = alternate_zone
+        compressed: list[str] = []
+        for zone in alternate_zones:
+            if not compressed or compressed[-1] != zone:
+                compressed.append(zone)
+        if compressed != primary and compressed not in alternatives:
+            alternatives.append(compressed)
+    return alternatives
 
 
 def build_chains(
@@ -400,27 +427,41 @@ def build_chains(
             "zone_path": compress_zones(chain_kicks),
             "terminal": chain["terminal"],
         }
+        alternatives = boundary_zone_alternatives(chain_kicks, public["zone_path"])
+        if alternatives:
+            public["zone_path_alternatives"] = alternatives
+        boundary_note = None
+        for kick in chain_kicks:
+            distance = abs(abs(kick.attack_progress_m) - ZONE_BOUNDARY_M)
+            if distance <= ZONE_BOUNDARY_TOLERANCE_M:
+                boundary_note = (
+                    f"Kick attack progress {kick.attack_progress_m:.3f} m is "
+                    f"{distance:.3f} m from the +/-{ZONE_BOUNDARY_M:.1f} m boundary; "
+                    "the listed zone-path alternative is accepted."
+                )
+                break
         scored_chains.append(public)
-        audit_chains.append(
-            {
-                **public,
-                "play_segment": chain["play_segment"],
-                "log_start_s": round(chain_kicks[0].time_s - epoch_s, 3),
-                "log_end_s": round(chain_kicks[-1].time_s - epoch_s, 3),
-                "segment_end_log_s": round(
-                    segment_end_times.get(chain["play_segment"], math.inf) - epoch_s,
-                    3,
-                ),
-                "kick_log_times_s": [
-                    round(kick.time_s - epoch_s, 3) for kick in chain_kicks
-                ],
-                "robot_ids": [kick.robot_id for kick in chain_kicks],
-                "kick_positions_m": [
-                    [round(kick.x_m, 3), round(kick.y_m, 3)] for kick in chain_kicks
-                ],
-                "kick_speeds_mps": [round(kick.speed_mps, 3) for kick in chain_kicks],
-            }
-        )
+        audit_entry = {
+            **public,
+            "play_segment": chain["play_segment"],
+            "log_start_s": round(chain_kicks[0].time_s - epoch_s, 3),
+            "log_end_s": round(chain_kicks[-1].time_s - epoch_s, 3),
+            "segment_end_log_s": round(
+                segment_end_times.get(chain["play_segment"], math.inf) - epoch_s,
+                3,
+            ),
+            "kick_log_times_s": [round(kick.time_s - epoch_s, 3) for kick in chain_kicks],
+            "robot_ids": [kick.robot_id for kick in chain_kicks],
+            "kick_positions_m": [
+                [round(kick.x_m, 3), round(kick.y_m, 3)] for kick in chain_kicks
+            ],
+            "kick_speeds_mps": [round(kick.speed_mps, 3) for kick in chain_kicks],
+            "attack_progress_m": [round(kick.attack_progress_m, 3) for kick in chain_kicks],
+            "zone_boundary_alternatives": alternatives,
+        }
+        if boundary_note is not None:
+            audit_entry["zone_boundary_note"] = boundary_note
+        audit_chains.append(audit_entry)
     return scored_chains, audit_chains
 
 
@@ -463,6 +504,7 @@ def main() -> None:
             "physical_kick_merge_distance_m": PHYSICAL_KICK_MERGE_DISTANCE_M,
             "min_kick_speed_mps": MIN_KICK_SPEED_MPS,
             "zone_boundary_m": ZONE_BOUNDARY_M,
+            "zone_boundary_tolerance_m": ZONE_BOUNDARY_TOLERANCE_M,
             "min_chain_kicks": MIN_CHAIN_KICKS,
         },
         "chains": audit_chains,

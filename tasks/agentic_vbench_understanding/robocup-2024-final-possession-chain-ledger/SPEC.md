@@ -15,7 +15,7 @@ modalities_required:
   audio: not used; the selected public representation has no audio stream.
 
 question: Starting after the first goal, reconstruct every maximal same-team live-play possession chain containing at least two distinct kicks.
-output_schema: '{"chains": [{"half": 1|2, "team": "white|black", "kick_count": "integer >= 2", "zone_path": ["defensive|middle|attacking", "..."], "terminal": "turnover|stoppage|goal"}]}'
+output_schema: '{"chains": [{"half": 1|2, "team": "white|black", "kick_count": "integer 2..64", "zone_path": ["defensive|middle|attacking", "..."], "terminal": "turnover|stoppage|goal"}]}'
 
 evidence:
   - First half after the opening goal; establishes the first qualifying chains and each team's initial attack direction.
@@ -29,7 +29,7 @@ ground_truth:
 
 scorer:
   metric: Exact full-chain order-preserving one-to-one matches followed by exact event-level IoU (Jaccard).
-  matching: A prediction earns credit only when half, team, kick_count, zone_path, and terminal all match.
+  matching: A prediction earns credit only when half, team, kick_count, zone_path, and terminal all match. One reviewed zone-boundary chain accepts its explicitly stored alternate full zone_path.
   partial_credit: none; no field earns standalone or graded credit.
   denominator: IoU is exact_matches / (submitted_entries + ground_truth_entries - exact_matches); every submitted list entry remains in the submitted-entry count, including schema-invalid entries and duplicates.
   oracle_reward: 1.0
@@ -50,7 +50,7 @@ anti_shortcut:
   frame_dump_no_tools: completed over all 44032 native frames with tools disabled
 
 input:
-  url: https://www.youtube.com/watch?v=364zEAsOclU
+  url: https://github.com/shengjun-zhang/agentic-vbench/releases/download/robocup-possession-chain-iou-20260907/match.mp4
   sha256: 076bcc59fc48443d24a72a87162021470b9e645b41c858c3ffa5b5b25bae36cd
   length_min: 14.6773
   resolution: 720p
@@ -74,11 +74,10 @@ temporal gameplay analysis.
 ## Calibration qualification
 
 The scorer, null/spam regressions, native-frame contact evidence, pinned base image,
-and exact ablation protocols are complete. The old local outputs are not claimed as
-qualification because they predate the final scorer and isolated environment. One
-clean final-image pass remains: Codex plus four Codex ablations, followed by Claude
-and Gemini end-to-end runs on the unchanged task. Results and whole-file trajectory
-digests belong in `calibration/scores.md`.
+exact ablation protocols, and retained qualification runs are complete. The old local
+outputs are not claimed as qualification because they predate the final scorer and
+isolated environment. Results and whole-file trajectory digests belong in
+`calibration/scores.md`.
 
 ## Contact observability
 
