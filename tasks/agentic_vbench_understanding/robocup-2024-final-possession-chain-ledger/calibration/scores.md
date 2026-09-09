@@ -26,9 +26,9 @@ Official reward is the `exact IoU` column. `precision`/`recall`/`n_pred`/`schema
 
 | harness | harness version | model | reasoning | exact IoU | precision | recall | n_pred | schema_valid | exact | tool-call turns | trajectory asset | whole-file SHA256 |
 |---|---|---|---|---:|---:|---:|---:|---:|---:|---:|---|---|
-| Codex | Harbor 0.20.0 + direct Responses harness | GPT-5.6 Sol | high | 0.0000 | 0.0000 | 0.0000 | 8 | 8 | 0 | 64 | [release bundle](https://github.com/shengjun-zhang/agentic-vbench/releases/download/robocup-possession-chain-iou-20260909-evidence/codex-e2e.tar.gz) | `a426ec0c084362eb5fe6de75643d18ac151d9d1252e08e81976c97cc278d97d3` |
-| Claude Code | Harbor 0.20.0 + manual wrapper | Claude Opus 4.8 | xhigh | 0.0571 | 0.1000 | 0.1176 | 20 | 20 | 2 | 416 | [release bundle](https://github.com/shengjun-zhang/agentic-vbench/releases/download/robocup-possession-chain-iou-20260909-evidence/claude-e2e.tar.gz) | `5025c388c679b6a07aced5de8a53628176f36cc7e51c5b809e16aa88d25baed1` |
-| Antigravity CLI | 1.1.21 | Gemini 3.5 Flash | high | 0.0213 | 0.0253 | 0.1176 | 79 | 79 | 2 | 145 | [release bundle](https://github.com/shengjun-zhang/agentic-vbench/releases/download/robocup-possession-chain-iou-20260909-evidence/antigravity-e2e.tar.gz) | `ad1f9812032649f8a59c8a996da901e88ca9814f32e7885d44429c29f1b96350` |
+| Codex | Harbor 0.20.0 + direct Responses harness | GPT-5.6 Sol | high | 0.0000 | 0.0000 | 0.0000 | 8 | 8 | 0 | 64 | [release bundle](https://github.com/shengjun-zhang/agentic-vbench/releases/download/robocup-possession-chain-iou-20260909-evidence-v2/codex-e2e.tar.gz) | `73d01016602e6f57f2c8eda118530ec27498cc8a8a584fa586520b3356dbbce7` |
+| Claude Code | Harbor 0.20.0 + manual wrapper | Claude Opus 4.8 | xhigh | 0.0571 | 0.1000 | 0.1176 | 20 | 20 | 2 | 416 | [release bundle](https://github.com/shengjun-zhang/agentic-vbench/releases/download/robocup-possession-chain-iou-20260909-evidence-v2/claude-e2e.tar.gz) | `b38a63503c592c43c7684c2e613ce0d404089c6d73e0241d1373a455e05df97c` |
+| Antigravity CLI | 1.1.21 | Gemini 3.5 Flash | high | 0.0213 | 0.0253 | 0.1176 | 79 | 79 | 2 | 145 | [release bundle](https://github.com/shengjun-zhang/agentic-vbench/releases/download/robocup-possession-chain-iou-20260909-evidence-v2/antigravity-e2e.tar.gz) | `51af33c5ed420549c7303592e8e2fee1bca86512f2480dfe20bd4eed4650737b` |
 
 The selected Claude Code row is the clean September 6 run. Its exact IoU is `0.0571`,
 below the `0.10` gate, with 20 submitted chains and 2 exact matches.
@@ -42,10 +42,10 @@ Exact input conditions are fixed in `ablations/README.md`.
 
 | condition | exact IoU | precision | recall | n_pred | schema_valid | exact | tool-call turns | trajectory asset | whole-file SHA256 |
 |---|---:|---:|---:|---:|---:|---:|---:|---|---|
-| Prompt/schema, no media | 0.0000 | 0.0000 | 0.0000 | 1 | 1 | 0 | 7 | [release bundle](https://github.com/shengjun-zhang/agentic-vbench/releases/download/robocup-possession-chain-iou-20260909-evidence/ablation-nomedia-forced.tar.gz) | `7750ae2d6b578020ab5877d141a15a3e1bf23b9774ebfa2393450eda6874b524` |
-| One temporal-midpoint frame | 0.0000 | 0.0000 | 0.0000 | 1 | 1 | 0 | 7 | [release bundle](https://github.com/shengjun-zhang/agentic-vbench/releases/download/robocup-possession-chain-iou-20260909-evidence/ablation-single-frame-forced.tar.gz) | `5506fc4fa50bdca06ad2d4fe8b9451c0b66e844d249f710ad81ee63d1a50d66f` |
-| OCR-only timeline | 0.0000 | 0.0000 | 0.0000 | 1 | 1 | 0 | 8 | [release bundle](https://github.com/shengjun-zhang/agentic-vbench/releases/download/robocup-possession-chain-iou-20260909-evidence/ablation-ocr-forced.tar.gz) | `f3aae9b201a5db27e70170ef4e9ba4a4e5d1d65cb6e641573c6d09f1d16a2389` |
-| Every native frame pasted, no tools (independent replicate) | 0.0185 | 0.0263 | 0.0588 | 38 | 38 | 1 | 0 | [release bundle](https://github.com/shengjun-zhang/agentic-vbench/releases/download/robocup-possession-chain-iou-20260909-evidence/ablation-allframes-notools.tar.gz) | `06a8d15016e4f0688121875450c2ff363911fd42af2a129d9560d509012b25ba` |
+| Prompt/schema, no media | 0.0000 | 0.0000 | 0.0000 | 1 | 1 | 0 | 7 | [release bundle](https://github.com/shengjun-zhang/agentic-vbench/releases/download/robocup-possession-chain-iou-20260909-evidence-v2/ablation-nomedia-forced.tar.gz) | `7750ae2d6b578020ab5877d141a15a3e1bf23b9774ebfa2393450eda6874b524` |
+| One temporal-midpoint frame | 0.0000 | 0.0000 | 0.0000 | 1 | 1 | 0 | 7 | [release bundle](https://github.com/shengjun-zhang/agentic-vbench/releases/download/robocup-possession-chain-iou-20260909-evidence-v2/ablation-single-frame-forced.tar.gz) | `5506fc4fa50bdca06ad2d4fe8b9451c0b66e844d249f710ad81ee63d1a50d66f` |
+| OCR-only timeline | 0.0000 | 0.0000 | 0.0000 | 1 | 1 | 0 | 8 | [release bundle](https://github.com/shengjun-zhang/agentic-vbench/releases/download/robocup-possession-chain-iou-20260909-evidence-v2/ablation-ocr-forced.tar.gz) | `f3aae9b201a5db27e70170ef4e9ba4a4e5d1d65cb6e641573c6d09f1d16a2389` |
+| Every native frame pasted, no tools (independent replicate) | 0.0185 | 0.0263 | 0.0588 | 38 | 38 | 1 | 0 | [release bundle](https://github.com/shengjun-zhang/agentic-vbench/releases/download/robocup-possession-chain-iou-20260909-evidence-v2/ablation-allframes-notools.tar.gz) | `32e0c7e0445c661572d8d9e4b3e0f2380a06cf052213c93abb4bda2e3a5a0002` |
 
 The three forced-answer rows each submitted one non-empty schema-valid ledger and
 scored exact IoU `0.0000`. The all-frame row is the pre-registered independent
@@ -56,7 +56,7 @@ sheets, one model turn, and no tools or subagents. The earlier all-frame run rem
 reproducibility diagnostic rather than the selected row.
 
 The immutable bundle archives are published in the
-[RoboCup exact-IoU release](https://github.com/shengjun-zhang/agentic-vbench/releases/tag/robocup-possession-chain-iou-20260909-evidence);
+[RoboCup exact-IoU release](https://github.com/shengjun-zhang/agentic-vbench/releases/tag/robocup-possession-chain-iou-20260909-evidence-v2);
 their whole-file SHA256 values are:
 
 | bundle | SHA256 |
