@@ -28,7 +28,7 @@ Official reward is the `exact IoU` column. `precision`/`recall`/`n_pred`/`schema
 |---|---|---|---|---:|---:|---:|---:|---:|---:|---:|---|---|
 | Codex | Harbor 0.20.0 + direct Responses harness | GPT-5.6 Sol | high | 0.0000 | 0.0000 | 0.0000 | 8 | 8 | 0 | 64 | [release bundle](https://github.com/shengjun-zhang/agentic-vbench/releases/download/robocup-possession-chain-iou-20260909-evidence-v2/codex-e2e.tar.gz) | `73d01016602e6f57f2c8eda118530ec27498cc8a8a584fa586520b3356dbbce7` |
 | Claude Code | Harbor 0.20.0 + manual wrapper | Claude Opus 4.8 | xhigh | 0.0571 | 0.1000 | 0.1176 | 20 | 20 | 2 | 416 | [release bundle](https://github.com/shengjun-zhang/agentic-vbench/releases/download/robocup-possession-chain-iou-20260909-evidence-v2/claude-e2e.tar.gz) | `b38a63503c592c43c7684c2e613ce0d404089c6d73e0241d1373a455e05df97c` |
-| Antigravity CLI | 1.1.21 | Gemini 3.5 Flash | high | 0.0213 | 0.0253 | 0.1176 | 79 | 79 | 2 | 145 | [release bundle](https://github.com/shengjun-zhang/agentic-vbench/releases/download/robocup-possession-chain-iou-20260909-evidence-v2/antigravity-e2e.tar.gz) | `51af33c5ed420549c7303592e8e2fee1bca86512f2480dfe20bd4eed4650737b` |
+| Antigravity CLI | 1.1.21 | Gemini 3.5 Flash | high | 0.0213 | 0.0253 | 0.1176 | 79 | 79 | 2 | 145 | [release bundle](https://github.com/shengjun-zhang/agentic-vbench/releases/download/robocup-possession-chain-iou-20260909-evidence-v3/antigravity-e2e.tar.gz) | `fa552db0db3bb99c8216da9709e4a1a772d2ac361c736b4ca18c247b3b0c65b8` |
 
 The selected Claude Code row is the clean September 6 run. Its exact IoU is `0.0571`,
 below the `0.10` gate, with 20 submitted chains and 2 exact matches.
@@ -63,7 +63,7 @@ their whole-file SHA256 values are:
 |---|---|
 | `codex-e2e.tar.gz` | `73d01016602e6f57f2c8eda118530ec27498cc8a8a584fa586520b3356dbbce7` |
 | `claude-e2e.tar.gz` | `b38a63503c592c43c7684c2e613ce0d404089c6d73e0241d1373a455e05df97c` |
-| `antigravity-e2e.tar.gz` | `51af33c5ed420549c7303592e8e2fee1bca86512f2480dfe20bd4eed4650737b` |
+| `antigravity-e2e.tar.gz` | `fa552db0db3bb99c8216da9709e4a1a772d2ac361c736b4ca18c247b3b0c65b8` |
 | `ablation-nomedia.tar.gz` | `ac7228cd359937cb1ea81c30983f1927f3ed96cb066141a03517282ab257fd68` |
 | `ablation-single-frame.tar.gz` | `8e21a31a1fcff64dfce741fa316d7602b63cfdd9b785c4d5b4a1909c645308ac` |
 | `ablation-ocr.tar.gz` | `285f1cc224822a719b4bce3365a6b33a75642393d8a809d7ad32598718e0e42d` |
@@ -115,7 +115,10 @@ attempt exceeds 50 tool-call turns.
 
 Antigravity records its tool progress in its native agent log rather than ATIF
 `tool_calls` objects. Its 145 tool-call turns are the non-empty action records before
-the final answer in that retained log.
+the final answer in that retained log. The matching native session is included as
+`native-transcript_full.jsonl` in the Antigravity release bundle; its SHA256 is
+`cd2afda22070aa65e08e2958f00691d7bd239414bf8f5b7f02ff6c3e8a6c14b0` (533 records,
+219 tool-call records).
 
 The old desktop/local-agent measurements are superseded diagnostics, not formal
 calibration: they predate the reviewer-requested scorer and did not use this pinned

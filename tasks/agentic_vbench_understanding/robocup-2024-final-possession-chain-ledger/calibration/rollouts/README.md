@@ -12,7 +12,9 @@ raw trajectory with a summary.
 
 For user-operated Claude and Antigravity runs, use the wrappers under
 `../manual-runs/`. Their generated `manual-run-summary.json` is metadata, not a
-replacement for the raw Harbor ATIF trajectory.
+replacement for the raw Harbor ATIF trajectory. Antigravity's native session is
+published alongside its score bundle when the CLI emits its native transcript;
+the bundle records the transcript SHA256 and run identity in its manifest.
 
 Example deterministic scrub:
 
