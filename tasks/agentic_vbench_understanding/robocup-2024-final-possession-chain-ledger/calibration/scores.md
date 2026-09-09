@@ -9,7 +9,7 @@ partial-credit scorer revisions into this table.
 
 Every row below was re-scored under the finalized judge
 (`steps/solve/tests/judge.py`, SHA256
-`1b2e7a5d6111d54fe33af2dd40bb2c5133a307fcc126efb31772b1580ea74cd6`) against the
+`1ff25ed4e3a3721906950f035704ee2e6a5c8553b4f601e76291e3a39b6cdbcd`) against the
 submitted `solution.json` recorded in each retained job. Submitted solutions and
 trajectories were not modified. Reproducible score/details bundles and manifests are
 under `jobs/robocup-review-fix-rescore-20260830/`.
@@ -26,36 +26,37 @@ Official reward is the `exact IoU` column. `precision`/`recall`/`n_pred`/`schema
 
 | harness | harness version | model | reasoning | exact IoU | precision | recall | n_pred | schema_valid | exact | tool-call turns | trajectory asset | whole-file SHA256 |
 |---|---|---|---|---:|---:|---:|---:|---:|---:|---:|---|---|
-| Codex | Harbor 0.20.0 + direct Responses harness | GPT-5.6 Sol | high | 0.0000 | 0.0000 | 0.0000 | 8 | 8 | 0 | 64 | [release bundle](https://github.com/shengjun-zhang/agentic-vbench/releases/download/robocup-possession-chain-iou-20260907/codex-e2e.tar.gz) | `a426ec0c084362eb5fe6de75643d18ac151d9d1252e08e81976c97cc278d97d3` |
-| Claude Code | Harbor 0.20.0 + manual wrapper | Claude Opus 4.8 | xhigh | 0.0571 | 0.1000 | 0.1176 | 20 | 20 | 2 | 416 | [release bundle](https://github.com/shengjun-zhang/agentic-vbench/releases/download/robocup-possession-chain-iou-20260907/claude-e2e.tar.gz) | `5025c388c679b6a07aced5de8a53628176f36cc7e51c5b809e16aa88d25baed1` |
-| Antigravity CLI | 1.1.21 | Gemini 3.5 Flash | high | 0.0213 | 0.0253 | 0.1176 | 79 | 79 | 2 | 145 | [release bundle](https://github.com/shengjun-zhang/agentic-vbench/releases/download/robocup-possession-chain-iou-20260907/antigravity-e2e.tar.gz) | `ad1f9812032649f8a59c8a996da901e88ca9814f32e7885d44429c29f1b96350` |
+| Codex | Harbor 0.20.0 + direct Responses harness | GPT-5.6 Sol | high | 0.0000 | 0.0000 | 0.0000 | 8 | 8 | 0 | 64 | [release bundle](https://github.com/shengjun-zhang/agentic-vbench/releases/download/robocup-possession-chain-iou-20260909/codex-e2e.tar.gz) | `a426ec0c084362eb5fe6de75643d18ac151d9d1252e08e81976c97cc278d97d3` |
+| Claude Code | Harbor 0.20.0 + manual wrapper | Claude Opus 4.8 | xhigh | 0.0571 | 0.1000 | 0.1176 | 20 | 20 | 2 | 416 | [release bundle](https://github.com/shengjun-zhang/agentic-vbench/releases/download/robocup-possession-chain-iou-20260909/claude-e2e.tar.gz) | `5025c388c679b6a07aced5de8a53628176f36cc7e51c5b809e16aa88d25baed1` |
+| Antigravity CLI | 1.1.21 | Gemini 3.5 Flash | high | 0.0213 | 0.0253 | 0.1176 | 79 | 79 | 2 | 145 | [release bundle](https://github.com/shengjun-zhang/agentic-vbench/releases/download/robocup-possession-chain-iou-20260909/antigravity-e2e.tar.gz) | `ad1f9812032649f8a59c8a996da901e88ca9814f32e7885d44429c29f1b96350` |
 
 The selected Claude Code row is the clean September 6 run. Its exact IoU is `0.0571`,
 below the `0.10` gate, with 20 submitted chains and 2 exact matches.
 
 ## Anti-shortcut ablations
 
-All four rows are real GPT-5.6 Sol runs under the final image and scorer, re-scored
-under the finalized exact-IoU judge. Exact input conditions are fixed in
-`ablations/README.md`.
+All rows are single-attempt GPT-5.6 Sol runs under the finalized scorer. The first
+three runs append the documented forced-answer suffix after the original instruction;
+its SHA256 is `5c31753b603af21b483f749a6379996b98d665e12ac7207dcf011d83c596ab6a`.
+Exact input conditions are fixed in `ablations/README.md`.
 
 | condition | exact IoU | precision | recall | n_pred | schema_valid | exact | tool-call turns | trajectory asset | whole-file SHA256 |
 |---|---:|---:|---:|---:|---:|---:|---:|---|---|
-| Prompt/schema, no media | 0.0000 | 0.0000 | 0.0000 | 0 | 0 | 0 | 2 | [release bundle](https://github.com/shengjun-zhang/agentic-vbench/releases/download/robocup-possession-chain-iou-20260907/ablation-nomedia.tar.gz) | `55dbfa7c3be082e6c3b7c523c3d93987e53cc59952204b4f33043f6323dceab1` |
-| One temporal-midpoint frame | 0.0000 | 0.0000 | 0.0000 | 0 | 0 | 0 | 7 | [release bundle](https://github.com/shengjun-zhang/agentic-vbench/releases/download/robocup-possession-chain-iou-20260907/ablation-single-frame.tar.gz) | `b3eb7a96e0a5df534223c06cdeda6f66e3f5140e2615fd7fe37fd8dc70383250` |
-| OCR-only timeline | 0.0000 | 0.0000 | 0.0000 | 0 | 0 | 0 | 4 | [release bundle](https://github.com/shengjun-zhang/agentic-vbench/releases/download/robocup-possession-chain-iou-20260907/ablation-ocr.tar.gz) | `6ca09d160ef1c730367f24fc269682d5ea4f83587138099a0c1d829bd9a8c2c3` |
-| Every native frame pasted, no tools (independent replicate) | 0.0185 | 0.0263 | 0.0588 | 38 | 38 | 1 | 0 | [release bundle](https://github.com/shengjun-zhang/agentic-vbench/releases/download/robocup-possession-chain-iou-20260907/ablation-allframes-notools.tar.gz) | `06a8d15016e4f0688121875450c2ff363911fd42af2a129d9560d509012b25ba` |
+| Prompt/schema, no media | 0.0000 | 0.0000 | 0.0000 | 1 | 1 | 0 | 7 | [release bundle](https://github.com/shengjun-zhang/agentic-vbench/releases/download/robocup-possession-chain-iou-20260909/ablation-nomedia-forced.tar.gz) | `7750ae2d6b578020ab5877d141a15a3e1bf23b9774ebfa2393450eda6874b524` |
+| One temporal-midpoint frame | 0.0000 | 0.0000 | 0.0000 | 1 | 1 | 0 | 7 | [release bundle](https://github.com/shengjun-zhang/agentic-vbench/releases/download/robocup-possession-chain-iou-20260909/ablation-single-frame-forced.tar.gz) | `5506fc4fa50bdca06ad2d4fe8b9451c0b66e844d249f710ad81ee63d1a50d66f` |
+| OCR-only timeline | 0.0000 | 0.0000 | 0.0000 | 1 | 1 | 0 | 8 | [release bundle](https://github.com/shengjun-zhang/agentic-vbench/releases/download/robocup-possession-chain-iou-20260909/ablation-ocr-forced.tar.gz) | `f3aae9b201a5db27e70170ef4e9ba4a4e5d1d65cb6e641573c6d09f1d16a2389` |
+| Every native frame pasted, no tools (independent replicate) | 0.0185 | 0.0263 | 0.0588 | 38 | 38 | 1 | 0 | [release bundle](https://github.com/shengjun-zhang/agentic-vbench/releases/download/robocup-possession-chain-iou-20260909/ablation-allframes-notools.tar.gz) | `06a8d15016e4f0688121875450c2ff363911fd42af2a129d9560d509012b25ba` |
 
-The three degraded-input rows above produced no `solution.json`
-(`n_predicted = 0`), so they score `0.0` under any metric. The all-frame row is the
-pre-registered independent replicate: one exact full-chain match out of 38 submitted
+The three forced-answer rows each submitted one non-empty schema-valid ledger and
+scored exact IoU `0.0000`. The all-frame row is the pre-registered independent
+replicate: one exact full-chain match out of 38 submitted
 entries against 17 ground-truth chains gives precision `0.0263`, recall `0.0588`, and
 exact IoU `0.0185`. It used all 44,032 decoded frames in 111 chronological 20-by-20
 sheets, one model turn, and no tools or subagents. The earlier all-frame run remains a
 reproducibility diagnostic rather than the selected row.
 
 The immutable bundle archives are published in the
-[RoboCup exact-IoU release](https://github.com/shengjun-zhang/agentic-vbench/releases/tag/robocup-possession-chain-iou-20260907);
+[RoboCup exact-IoU release](https://github.com/shengjun-zhang/agentic-vbench/releases/tag/robocup-possession-chain-iou-20260909);
 their whole-file SHA256 values are:
 
 | bundle | SHA256 |
@@ -67,6 +68,10 @@ their whole-file SHA256 values are:
 | `ablation-single-frame.tar.gz` | `8e21a31a1fcff64dfce741fa316d7602b63cfdd9b785c4d5b4a1909c645308ac` |
 | `ablation-ocr.tar.gz` | `285f1cc224822a719b4bce3365a6b33a75642393d8a809d7ad32598718e0e42d` |
 | `ablation-allframes-notools.tar.gz` | `32e0c7e0445c661572d8d9e4b3e0f2380a06cf052213c93abb4bda2e3a5a0002` |
+| `ablation-nomedia-forced.tar.gz` | `7750ae2d6b578020ab5877d141a15a3e1bf23b9774ebfa2393450eda6874b524` |
+| `ablation-single-frame-forced.tar.gz` | `5506fc4fa50bdca06ad2d4fe8b9451c0b66e844d249f710ad81ee63d1a50d66f` |
+| `ablation-ocr-forced.tar.gz` | `f3aae9b201a5db27e70170ef4e9ba4a4e5d1d65cb6e641573c6d09f1d16a2389` |
+| `allframes-inputs-and-request.tar.gz` | `cfb8083be72ce883a93d3f8e8c05750eafcab869355655321db8fd9dc5e1c277` |
 
 Condition-specific provenance:
 
@@ -77,20 +82,25 @@ Condition-specific provenance:
 | OCR only | `sha256:f27267214f7093b3e1466d48f3aba88b2c1dba3e5a4ec860110d40969e5958fe` | 177 timestamps and 6,175 text boxes; artifact SHA256 `9a59563e7d7df2127f7b0346d269069cd0276feaa4b55d6d17a4419a4f5703c8` |
 | All frames, no tools replicate | `sha256:73a4d049db3ada73882107a4e792c5e3340195224a205c7453de8bb3a4410912` | 44,032 frames; 111-sheet manifest SHA256 `011a16c3aafee19272d9eeab8321abd4110ae7b8eafd41f86c40dfec6f033325` |
 
+`allframes-inputs-and-request.tar.gz` retains the 111 original JPEG sheets, their
+per-sheet manifest, prompt, Responses record, trajectory, submitted solution,
+verifier output, preregistration, and no-tools runner. The manifest makes the
+original image sequence recoverable without altering the retained response.
+
 ## Run identity
 
 Record these once the final image is built and do not change the task between rows:
 
 | item | value |
 |---|---|
-| task commit | `7553740b95925b21a11000ec4d7256c127020577` |
+| task commit | `990711fbe7be8854dfa07007f7a60810b1f9f064` |
 | Harbor version | `0.20.0` |
-| verifier judge SHA256 | `1b2e7a5d6111d54fe33af2dd40bb2c5133a307fcc126efb31772b1580ea74cd6` |
+| verifier judge SHA256 | `1ff25ed4e3a3721906950f035704ee2e6a5c8553b4f601e76291e3a39b6cdbcd` |
 | Codex image ID | `sha256:ae98225846c1c83bb058392f1582e14b1dffea753d3a0ed2d38832a831631a39` |
 | Claude image ID | `sha256:ed8de26cfd100adf229adad2e0b8d70984d4ba002ef218b6145f57885e5937dc` |
 | Antigravity image ID | `sha256:b0d91055dca04597508994f693c9cc00b16bfeb5bfa2130a349fde0e66a7eeee` |
 | base image digest | `python:3.12-slim@sha256:2c941e860699f878900b0edc2403613c234d4b32eda3cc9fa7036991a2a63c4a` |
-| default materials URL | `https://github.com/shengjun-zhang/agentic-vbench/releases/download/robocup-possession-chain-iou-20260907/match.mp4` |
+| default materials URL | `https://github.com/shengjun-zhang/agentic-vbench/releases/download/robocup-possession-chain-iou-20260909/match.mp4` |
 | media SHA256 | `076bcc59fc48443d24a72a87162021470b9e645b41c858c3ffa5b5b25bae36cd` |
 
 ## Counting rules

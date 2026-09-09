@@ -50,7 +50,7 @@ anti_shortcut:
   frame_dump_no_tools: completed over all 44032 native frames with tools disabled
 
 input:
-  url: https://github.com/shengjun-zhang/agentic-vbench/releases/download/robocup-possession-chain-iou-20260907/match.mp4
+  url: https://github.com/shengjun-zhang/agentic-vbench/releases/download/robocup-possession-chain-iou-20260909/match.mp4
   sha256: 076bcc59fc48443d24a72a87162021470b9e645b41c858c3ffa5b5b25bae36cd
   length_min: 14.6773
   resolution: 720p

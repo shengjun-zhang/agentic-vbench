@@ -54,6 +54,10 @@ def main() -> None:
     assert score(ground_truth)["reward"] == 1.0
     assert score({"chains": []})["reward"] == 0.0
     assert score_bytes(b"not json")["reward"] == 0.0
+    oversized = b"{" + (b" " * 1_000_000) + b"}"
+    oversized_result = score_bytes(oversized)
+    assert oversized_result["reward"] == 0.0
+    assert oversized_result["details"]["reason"].startswith("unreadable solution.json")
     assert score({"chains": "wrong type"})["reward"] == 0.0
     for field, value in (("team", []), ("terminal", {}), ("zone_path", [[]])):
         malformed = dict(chains[0], **{field: value})

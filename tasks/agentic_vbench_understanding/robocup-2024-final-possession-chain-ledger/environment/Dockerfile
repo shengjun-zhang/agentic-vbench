@@ -6,7 +6,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 COPY fetch_youtube.py /usr/local/bin/fetch_youtube.py
 
-ARG MATERIALS_URL=https://github.com/shengjun-zhang/agentic-vbench/releases/download/robocup-possession-chain-iou-20260907/match.mp4
+ARG MATERIALS_URL=https://github.com/shengjun-zhang/agentic-vbench/releases/download/robocup-possession-chain-iou-20260909/match.mp4
 ARG VIDEO_ID=364zEAsOclU
 ARG MATERIALS_SHA256=076bcc59fc48443d24a72a87162021470b9e645b41c858c3ffa5b5b25bae36cd
 ARG VIDEO_WIDTH=1280
