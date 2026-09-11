@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import tempfile
 from pathlib import Path
@@ -14,33 +15,38 @@ JUDGE = TASK_DIR / "steps/solve/tests/judge.py"
 GROUND_TRUTH = TASK_DIR / "steps/solve/tests/ground_truth.json"
 
 
+def score_solution(solution: Path, root: Path) -> dict[str, object]:
+    reward_json = root / "reward.json"
+    reward_txt = root / "reward.txt"
+    details_json = root / "verifier-details.json"
+    subprocess.run(
+        [
+            "python3",
+            str(JUDGE),
+            "--solution",
+            str(solution),
+            "--reward-json",
+            str(reward_json),
+            "--reward-txt",
+            str(reward_txt),
+            "--details-json",
+            str(details_json),
+        ],
+        check=True,
+        timeout=3,
+    )
+    result = json.loads(reward_json.read_text(encoding="utf-8"))
+    result["details"] = json.loads(details_json.read_text(encoding="utf-8"))
+    assert float(reward_txt.read_text(encoding="utf-8")) == result["reward"]
+    return result
+
+
 def score_bytes(payload: bytes) -> dict[str, object]:
     with tempfile.TemporaryDirectory() as directory:
         root = Path(directory)
         solution = root / "solution.json"
-        reward_json = root / "reward.json"
-        reward_txt = root / "reward.txt"
-        details_json = root / "verifier-details.json"
         solution.write_bytes(payload)
-        subprocess.run(
-            [
-                "python3",
-                str(JUDGE),
-                "--solution",
-                str(solution),
-                "--reward-json",
-                str(reward_json),
-                "--reward-txt",
-                str(reward_txt),
-                "--details-json",
-                str(details_json),
-            ],
-            check=True,
-        )
-        result = json.loads(reward_json.read_text(encoding="utf-8"))
-        result["details"] = json.loads(details_json.read_text(encoding="utf-8"))
-        assert float(reward_txt.read_text(encoding="utf-8")) == result["reward"]
-        return result
+        return score_solution(solution, root)
 
 
 def score(payload: object) -> dict[str, object]:
@@ -58,6 +64,22 @@ def main() -> None:
     oversized_result = score_bytes(oversized)
     assert oversized_result["reward"] == 0.0
     assert oversized_result["details"]["reason"].startswith("unreadable solution.json")
+    with tempfile.TemporaryDirectory() as directory:
+        root = Path(directory)
+        target = root / "target.json"
+        target.write_text(json.dumps({"chains": chains}), encoding="utf-8")
+        solution = root / "solution.json"
+        solution.symlink_to(target)
+        symlink_result = score_solution(solution, root)
+        assert symlink_result["reward"] == 0.0
+        assert symlink_result["details"]["reason"].startswith("unreadable solution.json")
+    with tempfile.TemporaryDirectory() as directory:
+        root = Path(directory)
+        solution = root / "solution.json"
+        os.mkfifo(solution)
+        fifo_result = score_solution(solution, root)
+        assert fifo_result["reward"] == 0.0
+        assert fifo_result["details"]["reason"].startswith("unreadable solution.json")
     assert score({"chains": "wrong type"})["reward"] == 0.0
     for field, value in (("team", []), ("terminal", {}), ("zone_path", [[]])):
         malformed = dict(chains[0], **{field: value})

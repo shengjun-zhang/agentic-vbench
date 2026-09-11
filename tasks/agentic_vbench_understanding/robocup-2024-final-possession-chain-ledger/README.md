@@ -17,7 +17,7 @@ Pinned artifacts:
 
 | artifact | bytes | SHA256 |
 |---|---:|---|
-| [`match.mp4`](https://github.com/shengjun-zhang/agentic-vbench/releases/download/robocup-possession-chain-iou-20260907/match.mp4) (pinned release asset; source representation: YouTube itag 298) | 173,343,080 | `076bcc59fc48443d24a72a87162021470b9e645b41c858c3ffa5b5b25bae36cd` |
+| [`match.mp4`](https://github.com/shengjun-zhang/agentic-vbench/releases/download/robocup-possession-chain-media-20260911/match.mp4) (immutable pinned release asset; source representation: YouTube itag 298) | 173,343,080 | `076bcc59fc48443d24a72a87162021470b9e645b41c858c3ffa5b5b25bae36cd` |
 | official log | 244,923,080 | `9ceda35082d8b39049de258efbf35934687c525a92324bf9a23ed61b7a3318d0` |
 
 The video is H.264, 1280x720, 50 fps, 14:40.64, with no audio stream. It covers
@@ -88,7 +88,8 @@ not qualify the task. The retained qualification pass is recorded in
 
 See `calibration/scores.md` for the qualification table and
 `calibration/ablations/README.md` for exact degraded-input definitions. Raw final
-trajectories are published as fork release assets; their whole-file SHA256 values,
+trajectories and harness-native audit records are published as fork release assets;
+their whole-file SHA256 values,
 harness versions, image ID, task commit, and tool-call record types are recorded in
 the score table. `tools/scrub_trajectory.py` makes any required path/payload
 redactions reproducible. `calibration/RUNBOOK.md` contains the exact Harbor commands

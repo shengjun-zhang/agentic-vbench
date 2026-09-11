@@ -9,10 +9,12 @@ partial-credit scorer revisions into this table.
 
 Every row below was re-scored under the finalized judge
 (`steps/solve/tests/judge.py`, SHA256
-`1ff25ed4e3a3721906950f035704ee2e6a5c8553b4f601e76291e3a39b6cdbcd`) against the
+`4e7a7a9e565a39fa552a057f94ebf9c4945022f46f64f81d6fd728fef3ae6866`) against the
 submitted `solution.json` recorded in each retained job. Submitted solutions and
-trajectories were not modified. Reproducible score/details bundles and manifests are
-under `jobs/robocup-review-fix-rescore-20260830/`.
+trajectories were not modified. The final re-score outputs, manifests, and copied
+submitted answers are published in the immutable
+[re-score bundle](https://github.com/shengjun-zhang/agentic-vbench/releases/download/robocup-possession-chain-iou-20260911-evidence-v4/rescored-retained-answers.tar.gz)
+(`92e6bbe2927cd4dfcbe0c34834e398e316b051771885ac6815a6b3955734b1b2`).
 
 The reviewer-audited first-half boundary chain now accepts its one explicit alternate
 full path (`middle -> attacking` or `defensive -> attacking`). The tracked first kick
@@ -28,7 +30,7 @@ Official reward is the `exact IoU` column. `precision`/`recall`/`n_pred`/`schema
 |---|---|---|---|---:|---:|---:|---:|---:|---:|---:|---|---|
 | Codex | Harbor 0.20.0 + direct Responses harness | GPT-5.6 Sol | high | 0.0000 | 0.0000 | 0.0000 | 8 | 8 | 0 | 64 | [release bundle](https://github.com/shengjun-zhang/agentic-vbench/releases/download/robocup-possession-chain-iou-20260909-evidence-v2/codex-e2e.tar.gz) | `73d01016602e6f57f2c8eda118530ec27498cc8a8a584fa586520b3356dbbce7` |
 | Claude Code | Harbor 0.20.0 + manual wrapper | Claude Opus 4.8 | xhigh | 0.0571 | 0.1000 | 0.1176 | 20 | 20 | 2 | 416 | [release bundle](https://github.com/shengjun-zhang/agentic-vbench/releases/download/robocup-possession-chain-iou-20260909-evidence-v2/claude-e2e.tar.gz) | `b38a63503c592c43c7684c2e613ce0d404089c6d73e0241d1373a455e05df97c` |
-| Antigravity CLI | 1.1.21 | Gemini 3.5 Flash | high | 0.0213 | 0.0253 | 0.1176 | 79 | 79 | 2 | 145 | [release bundle](https://github.com/shengjun-zhang/agentic-vbench/releases/download/robocup-possession-chain-iou-20260909-evidence-v3/antigravity-e2e.tar.gz) | `fa552db0db3bb99c8216da9709e4a1a772d2ac361c736b4ca18c247b3b0c65b8` |
+| Antigravity CLI | 1.1.21 | Gemini 3.5 Flash | high | 0.0213 | 0.0253 | 0.1176 | 79 | 79 | 2 | 145 | [release bundle](https://github.com/shengjun-zhang/agentic-vbench/releases/download/robocup-possession-chain-iou-20260911-evidence-v4/antigravity-e2e.tar.gz) | `5368b2aff2514da8a06d4c7f1dedc6487bb0fa64f90c95637414342e7aa1ad3d` |
 
 The selected Claude Code row is the clean September 6 run. Its exact IoU is `0.0571`,
 below the `0.10` gate, with 20 submitted chains and 2 exact matches.
@@ -56,14 +58,15 @@ sheets, one model turn, and no tools or subagents. The earlier all-frame run rem
 reproducibility diagnostic rather than the selected row.
 
 The immutable bundle archives are published in the
-[RoboCup exact-IoU release](https://github.com/shengjun-zhang/agentic-vbench/releases/tag/robocup-possession-chain-iou-20260909-evidence-v2);
+[RoboCup evidence releases](https://github.com/shengjun-zhang/agentic-vbench/releases/tag/robocup-possession-chain-iou-20260911-evidence-v4);
 their whole-file SHA256 values are:
 
 | bundle | SHA256 |
 |---|---|
 | `codex-e2e.tar.gz` | `73d01016602e6f57f2c8eda118530ec27498cc8a8a584fa586520b3356dbbce7` |
 | `claude-e2e.tar.gz` | `b38a63503c592c43c7684c2e613ce0d404089c6d73e0241d1373a455e05df97c` |
-| `antigravity-e2e.tar.gz` | `fa552db0db3bb99c8216da9709e4a1a772d2ac361c736b4ca18c247b3b0c65b8` |
+| `antigravity-e2e.tar.gz` | `5368b2aff2514da8a06d4c7f1dedc6487bb0fa64f90c95637414342e7aa1ad3d` |
+| `rescored-retained-answers.tar.gz` | `92e6bbe2927cd4dfcbe0c34834e398e316b051771885ac6815a6b3955734b1b2` |
 | `ablation-nomedia.tar.gz` | `ac7228cd359937cb1ea81c30983f1927f3ed96cb066141a03517282ab257fd68` |
 | `ablation-single-frame.tar.gz` | `8e21a31a1fcff64dfce741fa316d7602b63cfdd9b785c4d5b4a1909c645308ac` |
 | `ablation-ocr.tar.gz` | `285f1cc224822a719b4bce3365a6b33a75642393d8a809d7ad32598718e0e42d` |
@@ -84,8 +87,9 @@ Condition-specific provenance:
 
 `allframes-inputs-and-request.tar.gz` retains the 111 original JPEG sheets, their
 per-sheet manifest, prompt, Responses record, trajectory, submitted solution,
-verifier output, preregistration, and no-tools runner. The manifest makes the
-original image sequence recoverable without altering the retained response.
+verifier output, preregistration, and no-tools runner. These materials make the
+input sequence and request context reconstructible without asserting retention of
+one complete serialized API request.
 
 ## Run identity
 
@@ -100,7 +104,7 @@ Record these once the final image is built and do not change the task between ro
 | Claude image ID | `sha256:ed8de26cfd100adf229adad2e0b8d70984d4ba002ef218b6145f57885e5937dc` |
 | Antigravity image ID | `sha256:b0d91055dca04597508994f693c9cc00b16bfeb5bfa2130a349fde0e66a7eeee` |
 | base image digest | `python:3.12-slim@sha256:2c941e860699f878900b0edc2403613c234d4b32eda3cc9fa7036991a2a63c4a` |
-| default materials URL | `https://github.com/shengjun-zhang/agentic-vbench/releases/download/robocup-possession-chain-iou-20260907/match.mp4` |
+| default materials URL | `https://github.com/shengjun-zhang/agentic-vbench/releases/download/robocup-possession-chain-media-20260911/match.mp4` |
 | media SHA256 | `076bcc59fc48443d24a72a87162021470b9e645b41c858c3ffa5b5b25bae36cd` |
 
 ## Counting rules
@@ -113,12 +117,12 @@ they differ. A run clears the difficulty gate only when exact full-chain IoU is 
 `0.10` for every reported strong-agent and ablation row, and a genuine end-to-end
 attempt exceeds 50 tool-call turns.
 
-Antigravity records its tool progress in its native agent log rather than ATIF
-`tool_calls` objects. Its 145 tool-call turns are the non-empty action records before
-the final answer in that retained log. The matching native session is included as
-`native-transcript_full.jsonl` in the Antigravity release bundle; its SHA256 is
-`cd2afda22070aa65e08e2958f00691d7bd239414bf8f5b7f02ff6c3e8a6c14b0` (533 records,
-219 tool-call records).
+Antigravity's 145 tool-call turns are the non-empty action records before the final
+answer in its retained CLI narration. The release also includes a path-sanitized
+outer App orchestration record, `outer-app-transcript_full.jsonl`, SHA256
+`4612e5c2c6c062fef3bf9ed420b17c4bbfe15d22ff489d3beffa1030fb11bc61`
+(509 records; 219 outer-App tool-call records). The latter is not counted as an
+inner task-agent tool trace; its scope is recorded in the bundle manifest.
 
 The old desktop/local-agent measurements are superseded diagnostics, not formal
 calibration: they predate the reviewer-requested scorer and did not use this pinned

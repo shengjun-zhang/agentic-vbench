@@ -5,6 +5,8 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
+import stat
 from pathlib import Path
 
 
@@ -121,6 +123,34 @@ def exact_iou(matches: int, predicted: int, expected: int) -> tuple[float, float
     return precision, recall, score
 
 
+def read_solution(path: Path) -> object:
+    """Read one bounded regular file without following special filesystem entries."""
+    flags = os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NONBLOCK", 0)
+    if not hasattr(os, "O_NOFOLLOW"):
+        raise RuntimeError("platform does not support no-follow solution reads")
+    descriptor = os.open(path, flags | os.O_NOFOLLOW)
+    try:
+        info = os.fstat(descriptor)
+        if not stat.S_ISREG(info.st_mode):
+            raise ValueError("solution.json is not a regular file")
+        if info.st_size > MAX_SOLUTION_BYTES:
+            raise ValueError(f"solution.json exceeds {MAX_SOLUTION_BYTES} bytes")
+
+        payload = bytearray()
+        while len(payload) <= MAX_SOLUTION_BYTES:
+            chunk = os.read(
+                descriptor, min(65536, MAX_SOLUTION_BYTES + 1 - len(payload))
+            )
+            if not chunk:
+                break
+            payload.extend(chunk)
+        if len(payload) > MAX_SOLUTION_BYTES:
+            raise ValueError(f"solution.json exceeds {MAX_SOLUTION_BYTES} bytes")
+        return json.loads(payload.decode("utf-8"))
+    finally:
+        os.close(descriptor)
+
+
 def main() -> None:
     args = parse_args()
     ground_truth_path = Path(__file__).with_name("ground_truth.json")
@@ -132,9 +162,7 @@ def main() -> None:
     reason = "ok"
     predictions_raw: list[object] = []
     try:
-        if args.solution.stat().st_size > MAX_SOLUTION_BYTES:
-            raise ValueError(f"solution.json exceeds {MAX_SOLUTION_BYTES} bytes")
-        solution = json.loads(args.solution.read_text(encoding="utf-8"))
+        solution = read_solution(args.solution)
         if not isinstance(solution, dict):
             raise ValueError("solution root is not an object")
         predictions_raw = solution.get("chains", [])
